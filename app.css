@@ -1,0 +1,195 @@
+:root {
+  --bg: #eef1f5;
+  --sidebar: #ffffff;
+  --surface: #ffffff;
+  --border: #d8dee8;
+  --text: #152033;
+  --muted: #64748b;
+  --accent: #b91c3c;
+  --accent-soft: #fef2f4;
+  --accent-ring: rgba(185, 28, 60, 0.15);
+  --sidebar-w: 272px;
+  --radius: 12px;
+  --shadow: 0 4px 24px rgba(21, 32, 51, 0.06);
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body {
+  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+.app { display: flex; height: 100vh; }
+
+/* Sidebar */
+.sidebar {
+  width: var(--sidebar-w);
+  background: var(--sidebar);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  box-shadow: 2px 0 12px rgba(21, 32, 51, 0.04);
+}
+.sidebar-head {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.15rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+.logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #c41e3a, #9f1239);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+.sidebar-head h1 {
+  margin: 0 0 0.15rem;
+  font-size: 0.92rem;
+  font-weight: 600;
+  line-height: 1.25;
+}
+.sidebar-head p {
+  margin: 0;
+  font-size: 0.7rem;
+  color: var(--muted);
+}
+.nav-section {
+  margin: 0.85rem 1rem 0.4rem;
+  font-size: 0.62rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+.nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 0.65rem 1rem;
+}
+.nav-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.7rem 0.75rem 0.7rem 0.85rem;
+  margin-bottom: 0.3rem;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
+  position: relative;
+}
+.nav-item::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 0;
+  border-radius: 0 2px 2px 0;
+  background: var(--accent);
+  transition: height 0.15s;
+}
+.nav-item:hover {
+  background: #f8fafc;
+  border-color: var(--border);
+}
+.nav-item.active {
+  background: var(--accent-soft);
+  border-color: #f5c2cb;
+  box-shadow: 0 0 0 3px var(--accent-ring);
+}
+.nav-item.active::before { height: 60%; }
+.nav-item.missing { opacity: 0.4; pointer-events: none; }
+.nav-title { display: block; font-size: 0.86rem; font-weight: 500; }
+.nav-meta {
+  display: block;
+  font-size: 0.68rem;
+  color: var(--muted);
+  margin-top: 0.15rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Main */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 1rem 1rem 1rem 0.75rem;
+}
+.main-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.65rem;
+  padding: 0 0.25rem;
+}
+.main-head h2 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.main-head .badge {
+  font-size: 0.62rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+  background: var(--accent-soft);
+  padding: 0.2em 0.55em;
+  border-radius: 4px;
+}
+.viewer {
+  flex: 1;
+  min-height: 0;
+  background: #f5f6f8;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+.viewer iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #f5f6f8;
+}
+.viewer .msg {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  padding: 2rem;
+  color: var(--muted);
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+.viewer .msg[hidden],
+.viewer iframe[hidden] { display: none; }
+
+@media (max-width: 768px) {
+  .app { flex-direction: column; }
+  body { overflow: auto; }
+  .sidebar { width: 100%; box-shadow: none; }
+  .nav { max-height: 220px; }
+  .main { padding: 0.75rem; min-height: 60vh; }
+}
