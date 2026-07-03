@@ -1,0 +1,5 @@
+.git
+.wrangler
+.dev.vars
+*.bat
+DEPLOY.md

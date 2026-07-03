@@ -12,8 +12,23 @@
 3. **Build settings:**
    - Framework preset: **None**
    - Build command: *(để trống)*
-   - Build output directory: **`/`** (root)
+   - Build output directory: **`.`** hoặc **`/`** (root)
+   - **Deploy command: để trống** — không dùng `npx wrangler deploy`
 4. **Deploy** — mỗi lần push `main` sẽ tự deploy
+
+### Fix lỗi `npx hugo` / `wrangler deploy`
+Nếu log build có `Executing user deploy command: npx wrangler deploy` hoặc `npx hugo`:
+
+1. Dashboard → project → **Settings** → **Build**
+2. **Xóa** Deploy command (để trống)
+3. **Xóa** Build command (để trống)
+4. Build output directory: **`.`**
+5. Framework preset: **None**
+6. Save → **Retry deployment**
+
+Repo đã có `wrangler.toml` (`pages_build_output_dir = "."`) để Cloudflare không tự detect Hugo.
+
+> **Lưu ý:** Dùng **Pages** (Git hoặc `wrangler pages deploy`), **không** dùng `npx wrangler deploy` (Workers).
 
 ### Cách 2 — Wrangler CLI
 ```bat
