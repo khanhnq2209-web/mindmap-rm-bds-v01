@@ -1,122 +1,103 @@
-const MAPS = [
-  { file: "maps/cccc.html", title: "Chung cư cao cấp", meta: "CCCC" },
-  { file: "maps/btlk.html", title: "Biệt thự, liền kề", meta: "BTLK" },
-  { file: "maps/ks.html", title: "Khách sạn", meta: "KS" },
-  { file: "maps/vphs.html", title: "Văn phòng hạng sang", meta: "VPHS" },
-];
-
-const LIGHT_CSS = `
-:root { color-scheme: light only !important; }
-html, body, #mindmap, svg, .markmap { background: #f5f6f8 !important; color: #1a2332 !important; }
-.markmap-dark, html.markmap-dark, html.markmap-dark body { background: #f5f6f8 !important; color: #1a2332 !important; }
-svg text, svg tspan { fill: #1a2332 !important; }
-svg foreignObject, svg foreignObject * { color: #1a2332 !important; }
-svg foreignObject code { background: #eef0f4 !important; color: #1a2332 !important; }
-svg path.markmap-link, svg line { stroke: #94a3b8 !important; }
-`;
+const CONFIG_URL = "config.json";
 
 const $ = (id) => document.getElementById(id);
 const frame = $("frame");
 const msg = $("msg");
-const title = $("title");
+const loading = $("loading");
+const retryBtn = $("retry");
+const titleEl = $("title");
+const badge = $("badge");
 const nav = $("nav");
-const buttons = [];
 
-function patchHtml(html) {
-  return html
-    .replace(
-      /if\s*\(\s*window\.matchMedia\([^)]+\)\s*\.matches\s*\)\s*\{[^}]*markmap-dark[^}]*\}/g,
-      "document.documentElement.classList.remove('markmap-dark');"
-    )
-    .replace(
-      /\.markmap-dark\s*\{\s*background:\s*#27272a;\s*color:\s*white;\s*\}/g,
-      ".markmap-dark{background:#f5f6f8;color:#1a2332}"
-    )
-    .replace("</head>", `<style id="gelex-light">${LIGHT_CSS}</style></head>`);
+let config = null;
+let maps = [];
+let buttons = [];
+let currentItem = null;
+
+function applySite(site) {
+  document.title = site.title;
+  $("brand").textContent = site.brand;
+  $("heading").textContent = site.heading;
+  $("subtitle").textContent = site.subtitle;
+  $("nav-label").textContent = site.navLabel;
 }
 
-function applyLight(doc) {
-  if (!doc) return;
+function showViewer(state) {
+  loading.hidden = state !== "loading";
+  msg.hidden = state !== "error";
+  retryBtn.hidden = state !== "error";
+  // Keep iframe in layout during load so markmap measures real dimensions
+  frame.hidden = state === "error";
+}
+
+function triggerMapResize() {
   try {
-    doc.documentElement.classList.remove("markmap-dark");
-    let el = doc.getElementById("gelex-light");
-    if (!el) {
-      el = doc.createElement("style");
-      el.id = "gelex-light";
-      doc.head.appendChild(el);
-    }
-    el.textContent = LIGHT_CSS;
-    doc.querySelectorAll("svg text").forEach((t) => t.setAttribute("fill", "#1a2332"));
+    const mm = frame.contentWindow?.mm;
+    if (mm?.fit) mm.fit();
+    else frame.contentWindow?.dispatchEvent(new Event("resize"));
   } catch (_) {}
 }
 
-function afterLoad() {
-  [0, 200, 600, 1500, 3000].forEach((ms) =>
-    setTimeout(() => applyLight(frame.contentDocument), ms)
-  );
+function afterMapReady() {
+  showViewer("map");
+  requestAnimationFrame(() => {
+    triggerMapResize();
+    setTimeout(triggerMapResize, 50);
+    setTimeout(triggerMapResize, 200);
+  });
 }
 
 function showError(text) {
   msg.textContent = text;
-  msg.hidden = false;
-  frame.hidden = true;
-}
-
-function showMap() {
-  msg.hidden = true;
-  frame.hidden = false;
+  showViewer("error");
 }
 
 function loadMap(file) {
-  if (!file || file.includes("..")) return showError("Đường dẫn không hợp lệ.");
-
-  const onReady = () => {
-    afterLoad();
-    showMap();
-  };
-
-  if (location.protocol === "file:") {
-    frame.onload = () => {
-      frame.onload = null;
-      onReady();
-    };
-    frame.src = file;
+  if (!file || file.includes("..")) {
+    showError("Đường dẫn không hợp lệ.");
     return;
   }
 
-  fetch(file)
-    .then((r) => (r.ok ? r.text() : Promise.reject(new Error(r.status))))
-    .then(patchHtml)
-    .then((html) => {
-      const url = URL.createObjectURL(new Blob([html], { type: "text/html" }));
-      frame.onload = () => {
-        frame.onload = null;
-        setTimeout(() => URL.revokeObjectURL(url), 500);
-        onReady();
-      };
-      frame.src = url;
-    })
-    .catch(() => showError(`Không tải được ${file}. Chạy start.bat hoặc kiểm tra maps/.`));
+  showViewer("loading");
+
+  frame.onload = () => {
+    frame.onload = null;
+    afterMapReady();
+  };
+
+  frame.src = file;
 }
 
 function openMap(item, btn, push = true) {
-  title.textContent = item.title;
-  const badge = $("badge");
-  if (badge) {
-    badge.textContent = item.meta;
-    badge.hidden = false;
-  }
-  buttons.forEach((b) => b.classList.toggle("active", b === btn));
-  if (push) history.replaceState(null, "", `?map=${encodeURIComponent(item.file)}`);
+  currentItem = item;
+  titleEl.textContent = item.title;
+  badge.textContent = item.code;
+  badge.hidden = false;
+  buttons.forEach((b) => {
+    const active = b === btn;
+    b.classList.toggle("active", active);
+    b.setAttribute("aria-current", active ? "page" : "false");
+  });
+  if (push) history.replaceState(null, "", `?map=${encodeURIComponent(item.id)}`);
   loadMap(item.file);
 }
 
 function buildNav() {
-  MAPS.forEach((item) => {
+  nav.replaceChildren();
+  buttons = [];
+
+  maps.forEach((item) => {
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "nav-item";
-    btn.innerHTML = `<span class="nav-title">${item.title}</span><span class="nav-meta">${item.meta}</span>`;
+    btn.setAttribute("aria-current", "false");
+    const titleSpan = document.createElement("span");
+    titleSpan.className = "nav-title";
+    titleSpan.textContent = item.title;
+    const codeSpan = document.createElement("span");
+    codeSpan.className = "nav-meta";
+    codeSpan.textContent = item.code;
+    btn.append(titleSpan, codeSpan);
     btn.onclick = () => openMap(item, btn);
     nav.appendChild(btn);
     buttons.push(btn);
@@ -131,12 +112,61 @@ function buildNav() {
   });
 }
 
-function init() {
-  buildNav();
+function resolveInitialMap() {
   const param = new URLSearchParams(location.search).get("map");
-  const item = MAPS.find((m) => m.file === param) || MAPS[0];
-  const idx = MAPS.indexOf(item);
-  if (item && buttons[idx]) openMap(item, buttons[idx], !!param && item.file === param);
+  if (!param) return { item: maps[0], push: false };
+
+  const byId = maps.find((m) => m.id === param);
+  if (byId) return { item: byId, push: true };
+
+  const byFile = maps.find((m) => m.file === param);
+  if (byFile) return { item: byFile, push: true };
+
+  return { item: maps[0], push: false };
+}
+
+async function loadConfig() {
+  const res = await fetch(CONFIG_URL, { cache: "no-cache" });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const data = await res.json();
+  if (!data?.site || !Array.isArray(data.maps) || data.maps.length === 0) {
+    throw new Error("invalid config");
+  }
+  return data;
+}
+
+async function init() {
+  retryBtn.onclick = () => {
+    if (currentItem) openMap(currentItem, buttons[maps.indexOf(currentItem)], false);
+    else location.reload();
+  };
+
+  try {
+    config = await loadConfig();
+  } catch {
+    const local = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+    showError(
+      local
+        ? "Không tải được config.json. Chạy start.bat hoặc kiểm tra file cấu hình."
+        : "Không tải được config.json. Kiểm tra deploy hoặc file cấu hình trên server."
+    );
+    return;
+  }
+
+  applySite(config.site);
+  maps = config.maps;
+  buildNav();
+
+  const { item, push } = resolveInitialMap();
+  const idx = maps.indexOf(item);
+  if (item && buttons[idx]) openMap(item, buttons[idx], push);
+
+  const viewer = document.querySelector(".viewer");
+  if (viewer) {
+    new ResizeObserver(() => {
+      if (!frame.hidden) triggerMapResize();
+    }).observe(viewer);
+  }
 }
 
 init();

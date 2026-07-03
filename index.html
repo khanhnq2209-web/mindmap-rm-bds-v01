@@ -3,35 +3,39 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="color-scheme" content="light" />
   <meta name="robots" content="noindex, nofollow" />
   <title>GELEX — Mindmap RM BĐS</title>
-  <link rel="stylesheet" href="app.css?v=2" />
+  <link rel="stylesheet" href="app.css?v=3" />
 </head>
 <body>
   <div class="app">
     <aside class="sidebar">
       <div class="sidebar-head">
-        <div class="logo">RM</div>
+        <div class="logo" id="brand">RM</div>
         <div>
-          <h1>Mindmap BĐS</h1>
-          <p>Ban Quản trị rủi ro GELEX</p>
+          <h1 id="heading">Mindmap BĐS</h1>
+          <p id="subtitle">Ban Quản trị rủi ro GELEX</p>
         </div>
       </div>
-      <p class="nav-section">Phân khúc</p>
-      <nav class="nav" id="nav"></nav>
+      <p class="nav-section" id="nav-label">Phân khúc</p>
+      <nav class="nav" id="nav" aria-label="Danh sách mindmap"></nav>
     </aside>
     <main class="main">
       <header class="main-head">
         <h2 id="title">—</h2>
-        <span class="badge" id="badge" hidden>Risk map</span>
+        <span class="badge" id="badge" hidden></span>
       </header>
       <div class="viewer">
+        <div class="loading" id="loading" hidden>
+          <span class="spinner" aria-hidden="true"></span>
+          <span>Đang tải mindmap…</span>
+        </div>
         <p class="msg" id="msg" hidden></p>
+        <button type="button" class="retry" id="retry" hidden>Thử lại</button>
         <iframe id="frame" title="Mindmap" hidden></iframe>
       </div>
     </main>
   </div>
-  <script src="app.js?v=5"></script>
+  <script src="app.js?v=7"></script>
 </body>
 </html>

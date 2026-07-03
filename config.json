@@ -1,0 +1,41 @@
+{
+  "site": {
+    "title": "GELEX — Mindmap RM BĐS",
+    "brand": "RM",
+    "heading": "Mindmap BĐS",
+    "subtitle": "Ban Quản trị rủi ro GELEX",
+    "navLabel": "Phân khúc"
+  },
+  "maps": [
+    {
+      "id": "cccc",
+      "file": "maps/cccc.html",
+      "title": "Chung cư cao cấp",
+      "code": "CCCC"
+    },
+    {
+      "id": "cccc_v13",
+      "file": "maps/cccc_v13.html",
+      "title": "Chung cư cao cấp v1.3",
+      "code": "CCCC_V13"
+    },
+    {
+      "id": "btlk",
+      "file": "maps/btlk.html",
+      "title": "Biệt thự, liền kề",
+      "code": "BTLK"
+    },
+    {
+      "id": "ks",
+      "file": "maps/ks.html",
+      "title": "Khách sạn",
+      "code": "KS"
+    },
+    {
+      "id": "vphs",
+      "file": "maps/vphs.html",
+      "title": "Văn phòng hạng sang",
+      "code": "VPHS"
+    }
+  ]
+}
