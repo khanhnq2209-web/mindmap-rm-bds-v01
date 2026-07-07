@@ -9,15 +9,9 @@
   "maps": [
     {
       "id": "cccc",
-      "file": "maps/cccc.html",
-      "title": "Chung cư cao cấp",
-      "code": "CCCC"
-    },
-    {
-      "id": "cccc_v13",
-      "file": "maps/cccc_v13.html",
-      "title": "Chung cư cao cấp v1.3",
-      "code": "CCCC_V13"
+      "embed": "https://app.xmind.com/embed/qx9Yvtgj?sheet-id=34e508c5-955b-4ab0-93a2-94036e5eccd9",
+      "title": "Chung cư cao cấp v2.0",
+      "code": "XMIND01"
     },
     {
       "id": "btlk",
@@ -30,12 +24,6 @@
       "file": "maps/ks.html",
       "title": "Khách sạn",
       "code": "KS"
-    },
-    {
-      "id": "xmind",
-      "embed": "https://app.xmind.com/embed/qx9Yvtgj?sheet-id=34e508c5-955b-4ab0-93a2-94036e5eccd9",
-      "title": "XMind",
-      "code": "XMIND"
     },
     {
       "id": "vphs",
