@@ -32,6 +32,12 @@
       "code": "KS"
     },
     {
+      "id": "xmind",
+      "embed": "https://app.xmind.com/embed/qx9Yvtgj?sheet-id=34e508c5-955b-4ab0-93a2-94036e5eccd9",
+      "title": "XMind",
+      "code": "XMIND"
+    },
+    {
       "id": "vphs",
       "file": "maps/vphs.html",
       "title": "Văn phòng hạng sang",

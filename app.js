@@ -22,6 +22,14 @@ function applySite(site) {
   $("nav-label").textContent = site.navLabel;
 }
 
+function getMapSource(item) {
+  return item.embed || item.file;
+}
+
+function isEmbed(item) {
+  return Boolean(item.embed);
+}
+
 function showViewer(state) {
   loading.hidden = state !== "loading";
   msg.hidden = state !== "error";
@@ -52,20 +60,39 @@ function showError(text) {
   showViewer("error");
 }
 
-function loadMap(file) {
-  if (!file || file.includes("..")) {
+function loadMap(item) {
+  const source = getMapSource(item);
+  if (!source) {
+    showError("Không có nguồn mindmap.");
+    return;
+  }
+
+  if (item.file && source.includes("..")) {
     showError("Đường dẫn không hợp lệ.");
     return;
   }
 
+  if (item.embed) {
+    try {
+      const url = new URL(source);
+      if (url.protocol !== "https:") throw new Error("protocol");
+    } catch {
+      showError("URL embed không hợp lệ.");
+      return;
+    }
+  }
+
   showViewer("loading");
+  frame.allow = "fullscreen";
+  frame.scrolling = item.embed ? "no" : "auto";
 
   frame.onload = () => {
     frame.onload = null;
-    afterMapReady();
+    if (isEmbed(item)) showViewer("map");
+    else afterMapReady();
   };
 
-  frame.src = file;
+  frame.src = source;
 }
 
 function openMap(item, btn, push = true) {
@@ -79,7 +106,7 @@ function openMap(item, btn, push = true) {
     b.setAttribute("aria-current", active ? "page" : "false");
   });
   if (push) history.replaceState(null, "", `?map=${encodeURIComponent(item.id)}`);
-  loadMap(item.file);
+  loadMap(item);
 }
 
 function buildNav() {
@@ -102,7 +129,7 @@ function buildNav() {
     nav.appendChild(btn);
     buttons.push(btn);
 
-    if (location.protocol !== "file:") {
+    if (location.protocol !== "file:" && item.file) {
       fetch(item.file, { method: "HEAD" })
         .then((r) => {
           if (!r.ok) btn.classList.add("missing");
@@ -121,6 +148,9 @@ function resolveInitialMap() {
 
   const byFile = maps.find((m) => m.file === param);
   if (byFile) return { item: byFile, push: true };
+
+  const byEmbed = maps.find((m) => m.embed === param);
+  if (byEmbed) return { item: byEmbed, push: true };
 
   return { item: maps[0], push: false };
 }
