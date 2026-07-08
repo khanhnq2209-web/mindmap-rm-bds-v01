@@ -15,20 +15,20 @@
     },
     {
       "id": "btlk",
-      "file": "maps/btlk.html",
-      "title": "Biệt thự, liền kề",
+      "embed": "https://app.xmind.com/embed/6zWV4RmZ?sheet-id=34e508c5-955b-4ab0-93a2-94036e5eccd9",
+      "title": "Biệt thự, liền kề v2.0",
       "code": "BTLK"
     },
     {
       "id": "ks",
-      "file": "maps/ks.html",
-      "title": "Khách sạn",
+      "embed": "https://app.xmind.com/embed/9Z8hNxQU?sheet-id=34e508c5-955b-4ab0-93a2-94036e5eccd9",
+      "title": "Khách sạn v2.0",
       "code": "KS"
     },
     {
       "id": "vphs",
-      "file": "maps/vphs.html",
-      "title": "Văn phòng hạng sang",
+      "embed": "https://app.xmind.com/embed/nRdqKeCD?sheet-id=34e508c5-955b-4ab0-93a2-94036e5eccd9",
+      "title": "Văn phòng hạng sang v2.0",
       "code": "VPHS"
     }
   ]
